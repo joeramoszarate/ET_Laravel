@@ -4,25 +4,25 @@
 
 @section('content')
 <!-- Hero -->
-<header class="bg-gradient-to-r from-blue-600 to-green-600 text-white py-20 rounded-lg shadow-lg">
+<header class="bg-gradient-to-r from-green-700 via-blue-600 to-green-600 text-white py-24 shadow-xl">
     <div class="max-w-6xl mx-auto text-center px-4">
-        <p class="inline-block bg-yellow-400 text-sm text-gray-800 rounded-full px-4 py-1 mb-4">Región Tumbes - Norte del Perú</p>
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Descubre las Maravillas de <span class="text-yellow-400">Tumbes</span></h1>
-        <p class="max-w-2xl mx-auto mb-8">Playas paradisíacas, manglares únicos y aventura en el norte del Perú. Tours con guías certificados y los mejores precios de la región.</p>
+        <p class="inline-block bg-yellow-400 text-sm text-green-800 font-semibold rounded-full px-5 py-2 mb-6">🌴 Región Tumbes - Norte del Perú 🌴</p>
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 text-white">Descubre las Maravillas de <span class="text-yellow-300">Tumbes</span></h1>
+        <p class="max-w-2xl mx-auto mb-10 text-lg text-gray-100">Playas paradisíacas, manglares únicos y aventura en el norte del Perú. Tours con guías certificados y los mejores precios de la región.</p>
 
         <!-- Buscador simplificado -->
-        <div class="bg-white rounded-xl shadow-lg p-6 max-w-3xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
             <form action="{{ route('cliente.tours') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div class="md:col-span-2">
-                    <label class="text-sm text-gray-600">Destino</label>
-                    <input name="destino" placeholder="¿A dónde quieres ir?" class="w-full border rounded px-3 py-2">
+                    <label class="text-sm font-semibold text-gray-700">Destino</label>
+                    <input name="destino" placeholder="¿A dónde quieres ir?" class="w-full border-2 border-green-200 rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
                 </div>
                 <div>
-                    <label class="text-sm text-gray-600">Fecha</label>
-                    <input type="date" name="fecha" class="w-full border rounded px-3 py-2">
+                    <label class="text-sm font-semibold text-gray-700">Fecha</label>
+                    <input type="date" name="fecha" class="w-full border-2 border-green-200 rounded-lg px-4 py-3 focus:border-green-500 focus:outline-none">
                 </div>
                 <div>
-                    <button class="w-full bg-yellow-400 text-gray-800 font-semibold py-2 rounded">Buscar Tours</button>
+                    <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-green-800 font-bold py-3 rounded-lg hover:from-yellow-300 hover:to-yellow-400 transition shadow-lg">🔍 Buscar Tours</button>
                 </div>
             </form>
         </div>
