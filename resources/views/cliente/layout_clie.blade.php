@@ -2,23 +2,57 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>@yield('title','Cliente')</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title','ExploreTuTumbes')</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
-    {{-- Fallback: si los assets ya fueron compilados con `npm run build` y Vite no está en modo dev, cargar el CSS compilado directamente --}}
     @php $compiledCss = 'build/assets/app-CEwZte8_.css'; @endphp
     @if(file_exists(public_path($compiledCss)))
         <link href="{{ asset($compiledCss) }}" rel="stylesheet">
     @endif
-    <style>body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}</style>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; margin: 0; background: #f8fafc; }
+        img { max-width: 100%; height: auto; }
+
+        /* Navbar responsivo */
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; }
+            .nav-auth { gap: 8px !important; }
+            .nav-auth a[href*="register"] span.reg-text { display: none; }
+        }
+
+        /* Grids responsivos generales */
+        @media (max-width: 900px) {
+            .footer-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 600px) {
+            .footer-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+            .footer-bottom-inner { flex-direction: column !important; text-align: center !important; }
+            .footer-bottom-links { justify-content: center !important; flex-wrap: wrap !important; gap: 12px !important; }
+            /* Hero responsivo */
+            .hero-search-grid { grid-template-columns: 1fr !important; }
+            /* Stats responsivo */
+            .stats-grid { grid-template-columns: 1fr !important; }
+            /* Features responsivo */
+            .features-grid { grid-template-columns: 1fr 1fr !important; }
+            /* Cards responsivo */
+            .cards-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 480px) {
+            .features-grid { grid-template-columns: 1fr !important; }
+            .tabs-row { flex-direction: column !important; }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen text-black">
+<body>
     @unless(request()->routeIs('cliente.login') || request()->routeIs('cliente.register'))
         @include('cliente.navbar')
     @endunless
 
-    <div class="container mx-auto px-4 mt-6">
-        @yield('content')
-    </div>
+    @yield('content')
+
+    @unless(request()->routeIs('cliente.login') || request()->routeIs('cliente.register'))
+        @include('cliente.footer_clie')
+    @endunless
 </body>
 </html>

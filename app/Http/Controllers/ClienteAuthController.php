@@ -29,16 +29,18 @@ class ClienteAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'correo'   => 'required|email',
             'password' => 'required',
         ]);
 
-        $cliente = Cliente::where('email', $request->email)->first();
-        if (! $cliente || ! Hash::check($request->password, $cliente->password)) {
-            return back()->withErrors(['email' => 'Credenciales inválidas'])->withInput();
+        $cliente = Cliente::where('correo', $request->correo)->first();
+
+        if (! $cliente || $cliente->contraseña !== $request->password) {
+            return back()->withErrors(['correo' => 'Correo o contraseña incorrectos.'])->withInput();
         }
 
-        Session::put('cliente_id', $cliente->id);
+        Session::put('cliente_id', $cliente->id_cliente);
+        Session::put('cliente_nombre', $cliente->nombre);
         return redirect()->route('cliente.inicio');
     }
 
@@ -50,48 +52,54 @@ class ClienteAuthController extends Controller
 
     public function showRegister()
     {
-        return view('cliente.registro_Clie');
+        $tiposDocumento = \App\Models\TipoDocumento::all();
+        return view('cliente.registro_Clie', compact('tiposDocumento'));
     }
 
     public function register(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|email|unique:clientes,email',
-            'password' => 'required|min:6|confirmed',
+            'nombre'       => 'required|string|max:100',
+            'apellidos'    => 'required|string|max:100',
+            'id_tipdoc'    => 'required|exists:tipodocumento,id_tipdoc',
+            'nro_documento'=> 'required|string|max:18',
+            'correo'       => 'required|email|max:100|unique:cliente,correo',
+            'nacionalidad' => 'nullable|string|max:18',
+            'telefono'     => 'nullable|string|max:18',
+            'password'     => 'required|string|max:8|confirmed',
+            'terminos'     => 'accepted',
         ]);
 
         $cliente = new Cliente();
-        $cliente->nombre = $request->nombre;
-        $cliente->email = $request->email;
-        $cliente->password = Hash::make($request->password);
-        if ($request->filled('telefono')) {
-            $cliente->telefono = $request->telefono;
-        }
+        $cliente->id_cliente    = strtoupper(substr(uniqid('C'), 0, 7));
+        $cliente->nombre        = $request->nombre;
+        $cliente->apellidos     = $request->apellidos;
+        $cliente->id_tipdoc     = $request->id_tipdoc;
+        $cliente->nro_documento = $request->nro_documento;
+        $cliente->correo        = $request->correo;
+        $cliente->contraseña    = $request->password;
+        $cliente->nacionalidad  = $request->nacionalidad;
+        $cliente->telefono      = $request->telefono;
         $cliente->save();
 
-        Session::put('cliente_id', $cliente->id);
+        Session::put('cliente_id', $cliente->id_cliente);
+        Session::put('cliente_nombre', $cliente->nombre);
         return redirect()->route('cliente.inicio');
     }
 
     public function inicio()
     {
-        if (! Session::has('cliente_id')) {
-            return redirect()->route('cliente.login');
-        }
-
-        $clienteId = Session::get('cliente_id');
-
-        // Destinos y tours para mostrar en la landing
         $destinos = \App\Models\Destino::orderBy('nombre')->take(6)->get();
         $tours = \App\Models\Tour::with('destino')->where('estado', 'activo')->take(6)->get();
 
-        // Reservas del cliente (últimas 3)
-        $reservas = \App\Models\Reserva::with('detalles.tour')
-            ->where('id_cliente', $clienteId)
-            ->orderBy('fecha_reserva', 'desc')
-            ->take(3)
-            ->get();
+        $reservas = collect();
+        if (Session::has('cliente_id')) {
+            $reservas = \App\Models\Reserva::with('detalles.tour')
+                ->where('id_cliente', Session::get('cliente_id'))
+                ->orderBy('fecha_reserva', 'desc')
+                ->take(3)
+                ->get();
+        }
 
         return view('cliente.inicio_Clie', compact('destinos', 'tours', 'reservas'));
     }
