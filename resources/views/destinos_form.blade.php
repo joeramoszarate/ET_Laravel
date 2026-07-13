@@ -17,7 +17,7 @@
                         <a href="{{ route('destinos') }}" class="btn btn-light btn-sm">×</a>
                     </div>
 
-                    <form action="{{ route('destinos.store') }}" method="POST">
+                    <form action="{{ route('destinos.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="row g-3">
@@ -56,9 +56,10 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="imagen_url" class="form-label">URL de Imagen *</label>
-                                <input type="text" name="imagen_url" id="imagen_url" class="form-control @error('imagen_url') is-invalid @enderror" value="{{ old('imagen_url') }}" placeholder="https://..." required>
-                                @error('imagen_url')
+                                <label for="imagen" class="form-label">Imagen del Destino</label>
+                                <input type="file" name="imagen" id="imagen" accept="image/*" class="form-control @error('imagen') is-invalid @enderror">
+                                <small class="text-muted">JPG, PNG o WEBP. Máx 4MB. Se guardará en <code>storage/destinos/</code></small>
+                                @error('imagen')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>

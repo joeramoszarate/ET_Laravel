@@ -56,6 +56,15 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
 
     Route::get('inicio', [ClienteAuthController::class, 'inicio'])->name('inicio');
     Route::get('tours', function () { return view('cliente.tours_Clie'); })->name('tours');
-    Route::get('destinos', function () { return view('cliente.destinos_Clie'); })->name('destinos');
-    Route::get('paquetes', function () { return view('cliente.paquetes_Clie'); })->name('paquetes');
+    Route::get('destinos', function () {
+        $destinos = \App\Models\Destino::orderBy('nombre')->get();
+        return view('cliente.destinos_Clie', compact('destinos'));
+    })->name('destinos');
+    Route::get('paquetes', function () {
+        $paquetes = \App\Models\Paquete::where('estado','A')->orderBy('precio_base')->get();
+        $tipoPaquetes = \App\Models\Paquete::where('estado','A')
+            ->selectRaw('id_tippaq, MIN(precio_base) as precio_min')
+            ->groupBy('id_tippaq')->get();
+        return view('cliente.paquetes_Clie', compact('paquetes','tipoPaquetes'));
+    })->name('paquetes');
 });

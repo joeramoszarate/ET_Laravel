@@ -24,15 +24,22 @@ class DestinoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:18',
-            'descripcion' => 'required|string|max:18',
-            'categoria' => 'required|string|max:18',
-            'temperatura_prom' => 'nullable|string|max:18',
-            'imagen_url' => 'required|string|max:255',
+            'nombre'          => 'required|string|max:18',
+            'descripcion'     => 'required|string|max:18',
+            'categoria'       => 'required|string|max:18',
+            'temperatura_prom'=> 'nullable|string|max:18',
+            'imagen'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'imagen_url'      => 'nullable|string|max:255',
         ]);
 
         $validated['id_destino'] = $this->generarIdDestino();
 
+        if ($request->hasFile('imagen')) {
+            $path = $request->file('imagen')->store('destinos', 'public');
+            $validated['imagen_url'] = asset('storage/' . $path);
+        }
+
+        unset($validated['imagen']);
         Destino::create($validated);
 
         return redirect()->route('destinos')->with('success', 'Destino creado correctamente.');
