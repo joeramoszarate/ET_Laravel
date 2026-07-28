@@ -45,6 +45,42 @@ class DestinoController extends Controller
         return redirect()->route('destinos')->with('success', 'Destino creado correctamente.');
     }
 
+    public function edit($id)
+    {
+        $destino = Destino::findOrFail($id);
+        return response()->json($destino);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $destino = Destino::findOrFail($id);
+
+        $validated = $request->validate([
+            'nombre'           => 'required|string|max:18',
+            'descripcion'      => 'required|string|max:18',
+            'categoria'        => 'required|string|max:18',
+            'temperatura_prom' => 'nullable|string|max:18',
+            'imagen'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+
+        if ($request->hasFile('imagen')) {
+            $path = $request->file('imagen')->store('destinos', 'public');
+            $validated['imagen_url'] = asset('storage/' . $path);
+        }
+
+        unset($validated['imagen']);
+        $destino->update($validated);
+
+        return redirect()->route('destinos')->with('success', 'Destino actualizado correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $destino = Destino::findOrFail($id);
+        $destino->delete();
+        return redirect()->route('destinos')->with('success', 'Destino eliminado correctamente.');
+    }
+
     private function generarIdDestino()
     {
         $ultimoDestino = Destino::orderByDesc('id_destino')->first();

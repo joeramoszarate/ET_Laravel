@@ -10,6 +10,7 @@ class Reserva extends Model
     protected $primaryKey = 'id_reserva';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_reserva',

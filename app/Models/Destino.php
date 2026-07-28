@@ -11,6 +11,8 @@ class Destino extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    public $timestamps = true;
+
     protected $fillable = [
         'id_destino',
         'nombre',

@@ -22,6 +22,8 @@ class Cliente extends Model
         'nacionalidad',
         'id_tipdoc',
         'telefono',
+        'descripcion',
+        'foto_perfil',
     ];
 
     public function reservas()

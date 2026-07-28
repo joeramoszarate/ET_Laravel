@@ -10,6 +10,7 @@ class DetalleReservaTour extends Model
     protected $primaryKey = 'id_numreto';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_numreto',

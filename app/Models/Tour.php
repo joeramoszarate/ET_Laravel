@@ -10,6 +10,7 @@ class Tour extends Model
     protected $primaryKey = 'id_tour';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_tour',
@@ -36,5 +37,10 @@ class Tour extends Model
     public function destino()
     {
         return $this->belongsTo(Destino::class, 'id_destino', 'id_destino');
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(CategoriaTour::class, 'id_catto', 'id_catto');
     }
 }

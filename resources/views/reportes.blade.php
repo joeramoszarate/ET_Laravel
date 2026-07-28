@@ -1,5 +1,6 @@
 <x-app-layout>
 <x-slot name="header">
+@include('partials.logo_header')
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <div>
         <h2 style="font-size:1.4rem;font-weight:800;color:#1e3a5f;margin:0;">Reportes y Análisis</h2>

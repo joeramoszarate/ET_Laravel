@@ -15,6 +15,11 @@ class PaqueteController extends Controller
         return view('paquetes', compact('paquetes'));
     }
 
+    public function editJson($id)
+    {
+        return response()->json(Paquete::findOrFail($id));
+    }
+
     public function edit($id)
     {
         $paquete = Paquete::findOrFail($id);

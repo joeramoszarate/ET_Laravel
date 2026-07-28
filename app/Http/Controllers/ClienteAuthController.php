@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ClienteAuthController extends Controller
 {
@@ -102,5 +104,80 @@ class ClienteAuthController extends Controller
         }
 
         return view('cliente.inicio_Clie', compact('destinos', 'tours', 'reservas'));
+    }
+
+    public function perfil()
+    {
+        if (!Session::has('cliente_id')) {
+            return redirect()->route('cliente.login');
+        }
+
+        $cliente = Cliente::findOrFail(Session::get('cliente_id'));
+        $tiposDocumento = \App\Models\TipoDocumento::all();
+
+        return view('cliente.perfil_Clie', compact('cliente', 'tiposDocumento'));
+    }
+
+    public function actualizarPerfil(Request $request)
+    {
+        if (!Session::has('cliente_id')) {
+            return redirect()->route('cliente.login');
+        }
+
+        $cliente = Cliente::findOrFail(Session::get('cliente_id'));
+
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+            'apellidos' => 'required|string|max:100',
+            'correo' => 'required|email|max:100|unique:cliente,correo,' . $cliente->id_cliente . ',id_cliente',
+            'telefono' => 'nullable|string|max:18',
+            'nacionalidad' => 'nullable|string|max:18',
+            'descripcion' => 'nullable|string|max:500',
+            'foto_perfil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('foto_perfil')) {
+            if ($cliente->foto_perfil && Storage::disk('public')->exists($cliente->foto_perfil)) {
+                Storage::disk('public')->delete($cliente->foto_perfil);
+            }
+
+            $path = $request->file('foto_perfil')->store('clientes/perfiles', 'public');
+            $cliente->foto_perfil = $path;
+        }
+
+        $cliente->nombre = $request->nombre;
+        $cliente->apellidos = $request->apellidos;
+        $cliente->correo = $request->correo;
+        $cliente->telefono = $request->telefono;
+        $cliente->nacionalidad = $request->nacionalidad;
+        $cliente->descripcion = $request->descripcion;
+        $cliente->save();
+
+        Session::put('cliente_nombre', $cliente->nombre);
+
+        return redirect()->route('cliente.perfil')->with('success', 'Tu perfil se actualizó correctamente.');
+    }
+
+    public function cambiarPassword(Request $request)
+    {
+        if (!Session::has('cliente_id')) {
+            return redirect()->route('cliente.login');
+        }
+
+        $cliente = Cliente::findOrFail(Session::get('cliente_id'));
+
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($cliente->contraseña !== $request->current_password) {
+            return back()->withErrors(['current_password' => 'La contraseña actual no es correcta.']);
+        }
+
+        $cliente->contraseña = $request->password;
+        $cliente->save();
+
+        return back()->with('success_password', 'Tu contraseña se cambió correctamente.');
     }
 }
