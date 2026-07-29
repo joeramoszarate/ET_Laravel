@@ -13,8 +13,8 @@
         </svg>
         Volver a tours
       </a>
-      <h1 style="margin:0 0 8px; font-size:2rem; color:#1e3a5f;">Reservar {{ $tour->nombre_tour }}</h1>
-      <p style="margin:0; color:#64748b; font-size:0.95rem;">{{ $tour->destino->nombre ?? 'Destino' }} • Duración: {{ $tour->duracion_dias }} días</p>
+      <h1 style="margin:0 0 8px; font-size:2rem; color:#1e3a5f;">Reserva: {{ $tour->nombre_tour }}</h1>
+      <p style="margin:0; color:#64748b; font-size:0.95rem;">Ruta: {{ $tour->destino->nombre ?? 'Destino' }} • Duración: {{ $tour->duracion_dias }} día{{ $tour->duracion_dias>1 ? 's' : '' }}</p>
     </div>
 
     <div style="display:grid; gap:24px; grid-template-columns:1fr 420px;">
@@ -23,27 +23,31 @@
         <form action="{{ route('cliente.tours.reserva.store', $tour->id_tour) }}" method="POST" id="formReserva" style="display:grid; gap:28px;">
           @csrf
 
-          {{-- Sección 1: Estadia --}}
+          {{-- Sección 1: Servicio / Paquete --}}
           <div style="border-bottom:2px solid #e2e8f0; padding-bottom:28px;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
               <div style="width:28px; height:28px; background:#0e7490; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">1</div>
-              <h2 style="margin:0; font-size:1.1rem; color:#1e3a5f; font-weight:700;">Estadia</h2>
+              <h2 style="margin:0; font-size:1.1rem; color:#1e3a5f; font-weight:700;">Servicio / Paquete</h2>
             </div>
 
             <div style="display:grid; gap:16px; grid-template-columns:1fr 1fr;">
               <div>
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Tipo de habitación *</label>
-                <select name="tipo_habitacion" style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; background:#fff; cursor:pointer; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
-                  <option value="">Selecciona tipo...</option>
-                  <option value="familiar_estandar">Familiar Estándar</option>
-                  <option value="individual">Individual</option>
-                  <option value="doble">Doble</option>
-                  <option value="suite">Suite</option>
-                </select>
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Servicio seleccionado</label>
+                <div style="padding:12px; border-radius:8px; border:1px solid #e2e8f0; background:#f8fafc; color:#0f172a;">
+                  <strong>{{ $tour->nombre_tour }}</strong>
+                  <div style="font-size:0.9rem; color:#475569;">Ruta: {{ $tour->destino->nombre ?? 'Destino' }} — Duración: {{ $tour->duracion_dias }} día{{ $tour->duracion_dias>1 ? 's' : '' }}</div>
+                </div>
+                <input type="hidden" name="opcion_paquete" value="tour">
+                <input type="hidden" name="id_tour" value="{{ $tour->id_tour }}">
               </div>
               <div>
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">N° Habitación</label>
-                <input type="text" name="nro_habitacion" value="212" style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Servicios adicionales (opcional)</label>
+                <select name="servicios_adicionales" style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; background:#fff; cursor:pointer; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
+                  <option value="">Ninguno</option>
+                  <option value="traslado_aeropuerto">Traslado aeropuerto</option>
+                  <option value="guia_local">Guía local</option>
+                  <option value="almuerzo">Almuerzo incluido</option>
+                </select>
               </div>
             </div>
           </div>
@@ -65,8 +69,8 @@
                 <input type="number" name="ninos" value="0" min="0" style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
               </div>
               <div>
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Desc. por noche</label>
-                <input type="number" name="descuentos_noche" value="0" min="0" step="0.01" style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Descuento promocional (S/)</label>
+                <input type="number" name="descuento_promocional" value="0" min="0" step="0.01" style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
               </div>
             </div>
           </div>
@@ -75,17 +79,17 @@
           <div style="border-bottom:2px solid #e2e8f0; padding-bottom:28px;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
               <div style="width:28px; height:28px; background:#0e7490; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">3</div>
-              <h2 style="margin:0; font-size:1.1rem; color:#1e3a5f; font-weight:700;">Tipo de recepción</h2>
+              <h2 style="margin:0; font-size:1.1rem; color:#1e3a5f; font-weight:700;">Tipo de traslado / recepción</h2>
             </div>
 
             <div style="display:grid; gap:12px; grid-template-columns:1fr 1fr;">
               <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; border:1.5px solid #cbd5e1; border-radius:10px; cursor:pointer; transition:all 0.15s;">
                 <input type="radio" name="tipo_recepcion" value="individual" checked style="width:16px; height:16px; cursor:pointer; accent-color:#0e7490;">
-                <span style="color:#334155; font-weight:500;">Individual</span>
+                <span style="color:#334155; font-weight:500;">Traslado individual (pick-up)</span>
               </label>
               <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; border:1.5px solid #cbd5e1; border-radius:10px; cursor:pointer; transition:all 0.15s;">
                 <input type="radio" name="tipo_recepcion" value="grupal" style="width:16px; height:16px; cursor:pointer; accent-color:#0e7490;">
-                <span style="color:#334155; font-weight:500;">Grupal</span>
+                <span style="color:#334155; font-weight:500;">Traslado compartido</span>
               </label>
             </div>
           </div>
@@ -99,7 +103,7 @@
 
             <div style="display:grid; gap:16px; grid-template-columns:1fr 1fr;">
               <div>
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Canal *</label>
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Canal de reserva *</label>
                 <select name="canal" required style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; background:#fff; cursor:pointer; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
                   <option value="">Selecciona canal...</option>
                   <option value="agencia_wayra">Agencia Wayra Tours</option>
@@ -108,25 +112,25 @@
                 </select>
               </div>
               <div>
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Fecha de reserva *</label>
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Fecha de inicio *</label>
                 <input type="date" name="fecha_inicio" required style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
               </div>
             </div>
 
             <div style="display:grid; gap:16px; grid-template-columns:1fr 1fr; margin-top:16px;">
               <div>
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Hora de llegada *</label>
-                <input type="time" name="hora_llegada" value="14:00" required style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Hora de inicio *</label>
+                <input type="time" name="hora_inicio" value="08:00" required style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
               </div>
               <div>
-                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Hora de salida *</label>
-                <input type="time" name="hora_salida" value="11:00" required style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Hora de finalización *</label>
+                <input type="time" name="hora_fin" value="12:00" required style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'">
               </div>
             </div>
 
             <div style="margin-top:16px;">
-              <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Observaciones</label>
-              <textarea name="observaciones" rows="3" placeholder="Agrega notas o solicitudes especiales..." style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; resize:vertical; font-family:inherit; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'"></textarea>
+              <label style="display:block; margin-bottom:8px; font-weight:600; color:#334155; font-size:0.9rem;">Notas / solicitudes</label>
+              <textarea name="observaciones" rows="3" placeholder="Indica alergias, necesidades de accesibilidad, preferencia de horarios, etc." style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid #cbd5e1; font-size:0.95rem; resize:vertical; font-family:inherit; transition:border-color 0.15s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#cbd5e1'"></textarea>
             </div>
           </div>
 
@@ -150,11 +154,11 @@
           <div style="background:linear-gradient(135deg,#f5f7fa 0%,#e8ecf1 100%); border-radius:12px; padding:16px; margin-bottom:16px;">
             <div style="display:grid; gap:12px; font-size:0.9rem;">
               <div style="display:flex; justify-content:space-between; color:#64748b;">
-                <span>Habitación Familiar Estándar</span>
+                <span>Precio por persona</span>
                 <span style="font-weight:600;">S/ {{ number_format($tour->precio, 2) }}</span>
               </div>
               <div style="border-top:1px solid #cbd5e1; padding-top:12px; display:flex; justify-content:space-between; color:#1e3a5f; font-weight:700;">
-                <span>Subtotal</span>
+                <span>Subtotal estimado</span>
                 <span>S/ <span id="subtotal">{{ number_format($tour->precio, 2) }}</span></span>
               </div>
             </div>
@@ -173,8 +177,8 @@
           </div>
 
           <div style="background:#fef3c7; border-left:4px solid #f59e0b; padding:12px; border-radius:8px; font-size:0.85rem; color:#7c2d12;">
-            <strong style="display:block; margin-bottom:4px;">ℹ️ Información</strong>
-            <p style="margin:0;">Confirma tu reserva y nos contactaremos en 24 horas para validar tu pago.</p>
+            <strong style="display:block; margin-bottom:4px;">ℹ️ Información importante</strong>
+            <p style="margin:0;">Al confirmar la reserva, nuestro equipo te contactará para coordinar pago y detalles (horarios y traslados). Puedes cancelar con 48 horas de anticipación según la política del servicio.</p>
           </div>
         </div>
 
@@ -199,14 +203,14 @@
 </div>
 
 <script>
-  document.querySelectorAll('input[name="adultos"], input[name="ninos"], input[name="descuentos_noche"]').forEach(input => {
+  document.querySelectorAll('input[name="adultos"], input[name="ninos"], input[name="descuento_promocional"]').forEach(input => {
     input.addEventListener('change', actualizarTotal);
   });
 
   function actualizarTotal() {
     const adultos = parseInt(document.querySelector('input[name="adultos"]').value) || 0;
     const ninos = parseInt(document.querySelector('input[name="ninos"]').value) || 0;
-    const descuento = parseFloat(document.querySelector('input[name="descuentos_noche"]').value) || 0;
+    const descuento = parseFloat(document.querySelector('input[name="descuento_promocional"]').value) || 0;
     const precioPorPersona = {{ $tour->precio }};
     
     const totalPersonas = adultos + ninos;

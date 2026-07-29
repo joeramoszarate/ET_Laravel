@@ -103,4 +103,7 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
             ->groupBy('id_tippaq')->get();
         return view('cliente.paquetes_Clie', compact('paquetes','tipoPaquetes'));
     })->name('paquetes');
+    // Pago de reservas (cliente)
+    Route::get('reservas/{id_reserva}/pago', [ClienteReservaController::class, 'showPago'])->name('reservas.pago');
+    Route::post('reservas/{id_reserva}/pago', [ClienteReservaController::class, 'storePago'])->name('reservas.pago.store');
 });

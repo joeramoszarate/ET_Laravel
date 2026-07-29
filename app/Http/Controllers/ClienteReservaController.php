@@ -11,6 +11,7 @@ use App\Models\Cliente;
 use App\Models\TipoDocumento;
 use App\Models\TipoRol;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
@@ -196,5 +197,51 @@ class ClienteReservaController extends Controller
         $reserva->save();
 
         return redirect()->route('cliente.inicio')->with('success', 'Tu reserva de paquete ha sido registrada. Nos contactaremos pronto.');
+    }
+
+    public function showPago($id_reserva)
+    {
+        if (!Session::has('cliente_id')) {
+            return redirect()->route('cliente.login')->with('info', 'Debes iniciar sesión para realizar el pago.');
+        }
+
+        $reserva = Reserva::with('cliente')->findOrFail($id_reserva);
+        // obtener detalles del tour si existen
+        $detalle = DetalleReservaTour::where('id_reserva', $reserva->id_reserva)->with('tour')->first();
+
+        $metodos = DB::table('metodopago')->where('estado', 'A')->get();
+
+        return view('cliente.pago_reserva_Clie', compact('reserva', 'detalle', 'metodos'));
+    }
+
+    public function storePago(Request $request, $id_reserva)
+    {
+        if (!Session::has('cliente_id')) {
+            return redirect()->route('cliente.login');
+        }
+
+        $request->validate([
+            'id_metpago' => 'required|string',
+            'monto' => 'required|numeric|min:0'
+        ]);
+
+        $reserva = Reserva::findOrFail($id_reserva);
+
+        // insertar comprobante en tabla comprobantepago
+        $id_compag = strtoupper(substr(uniqid('CP'), 0, 8));
+        DB::table('comprobantepago')->insert([
+            'id_compag' => $id_compag,
+            'id_reserva' => $reserva->id_reserva,
+            'id_metpago' => $request->id_metpago,
+            'monto_facturado' => $request->monto,
+            'fecha_emision' => now(),
+            'descripcion' => $request->descripcion ?? 'Pago desde cliente',
+        ]);
+
+        // actualizar estado de reserva a confirmado
+        $reserva->estado = 'C';
+        $reserva->save();
+
+        return redirect()->route('cliente.inicio')->with('success', 'Pago registrado correctamente. Gracias.');
     }
 }
